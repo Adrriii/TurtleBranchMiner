@@ -8,7 +8,7 @@ function checkBlock(dir)
 		success, block = turtle.inspect()
 	elseif dir == "right" then
 		turtle.turnRight()
-  success, block = turtle.inspect()
+        success, block = turtle.inspect()
 	elseif dir == "front" then
 		success, block = turtle.inspect()
 	elseif dir == "top" then
@@ -20,7 +20,7 @@ function checkBlock(dir)
 	if not success or not block then return false
 	else
 	if type(block) == "boolean" then return false end
-	return nonOreBlocks[block["name"]] ~= 1
+	    return nonOreBlocks[block["name"]] ~= 1
 	end
 end
 
@@ -251,7 +251,7 @@ nonOreBlocks["minecraft:gravel"] = 1
 nonOreBlocks["minecraft:sand"] = 1
 nonOreBlocks["thermalfoundation:ore_fluid"] = 1
 
--- 'Blocks' through which the turtle can go through --
+-- 'Blocks' through which the turtle can go --
 nonBlocking = {}
 nonBlocking["minecraft:flowing_lava"] = 1
 nonBlocking["minecraft:flowing_water"] = 1
