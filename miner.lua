@@ -174,6 +174,7 @@ end
 function emptyInventory()
 	local itemCounts = {}
 	local itemsDropped = {}
+	local droppedCount = 0
 	local slot = 1
 
 	while slot < 17 do
@@ -202,6 +203,7 @@ function emptyInventory()
 					else
 						itemsDropped[item["name"]] = itemsDropped[item["name"]] + dropAmount
 					end
+					droppedCount = droppedCount + dropAmount
 				end
 			else
 				turtle.dropDown(itemCount)
@@ -212,14 +214,17 @@ function emptyInventory()
 				else
 					itemsDropped[item["name"]] = itemsDropped[item["name"]] + itemCount
 				end
+				droppedCount = droppedCount + itemCount
 			end
 		end
 		slot = slot + 1
 	end
 
-	print("Unloaded :")
-	for k,v in ipairs(itemsDropped) do
-		print(k..":",v)
+	if droppedCount > 0 then
+		print("Unloaded",droppedCount,"items :")
+		for k,v in pairs(itemsDropped) do
+			print("x"..v,k)
+		end
 	end
 end
 
@@ -281,7 +286,7 @@ tunnel_l = 100
 -- Interval between tunnels
 tunnel_i = 3
 -- Number of tunnels to ignore (Already dug for example)
-tunnel_ignore = 5
+tunnel_ignore = 0
 
 ---- CODE START ----
 local arg = {...}
@@ -306,8 +311,8 @@ while current_tn < tunnel_n do
 			end
 			turtle.turnLeft()
 		end
+		emptyInventory()
 	end
-	emptyInventory()
 
 	current_tn = current_tn + 1
 
