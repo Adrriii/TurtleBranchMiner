@@ -8,7 +8,7 @@ function checkBlock(dir)
 		success, block = turtle.inspect()
 	elseif dir == "right" then
 		turtle.turnRight()
-        success, block = turtle.inspect()
+		success, block = turtle.inspect()
 	elseif dir == "front" then
 		success, block = turtle.inspect()
 	elseif dir == "top" then
@@ -19,8 +19,8 @@ function checkBlock(dir)
 
 	if not success or not block then return false
 	else
-	if type(block) == "boolean" then return false end
-	    return nonOreBlocks[block["name"]] ~= 1
+		if type(block) == "boolean" then return false end
+		return nonOreBlocks[block["name"]] ~= 1
 	end
 end
 
@@ -84,8 +84,14 @@ function mineDeposit()
 		mineDeposit()
 		move("back")
 	end
-	turtle.turnRight()
-	if checkBlock("right") then
+	turtle.turnLeft()
+	if checkBlock("front") then
+		mineBlock("forward")
+		move("forward")
+		mineDeposit()
+		move("back")
+	end
+	if checkBlock("left") then
 		mineBlock("forward")
 		move("forward")
 		mineDeposit()
@@ -104,7 +110,13 @@ function move(dir)
 		repeat until turtle.forward()
 		x = x + 1
 	elseif dir == "back" then
-		repeat until turtle.back()
+		while not turtle.back() do
+			turtle.turnLeft()
+			turtle.turnLeft()
+			mineBlock("forward")
+			turtle.turnLeft()
+			turtle.turnLeft()
+		end
 		x = x - 1
 	elseif dir == "top" then
 		mineBlock("top")
@@ -123,7 +135,6 @@ function selectItem(itemName)
 
 	while slot < 17 do
 		if turtle.getItemCount(slot) > 0 then
-			print("Trying to find",itemName,"on slot",slot)
 			item = turtle.getItemDetail(slot)
 			if item["name"] == itemName then
 				turtle.select(slot)
@@ -255,6 +266,7 @@ nonOreBlocks["minecraft:flowing_water"] = 1
 nonOreBlocks["minecraft:gravel"] = 1
 nonOreBlocks["minecraft:sand"] = 1
 nonOreBlocks["thermalfoundation:ore_fluid"] = 1
+nonOreBlocks["thermalfoundation:fluid_redstone"] = 1
 
 -- 'Blocks' through which the turtle can go --
 nonBlocking = {}
@@ -263,11 +275,12 @@ nonBlocking["minecraft:flowing_water"] = 1
 nonBlocking["minecraft:lava"] = 1
 nonBlocking["minecraft:water"] = 1
 nonBlocking["thermalfoundation:ore_fluid"] = 1
+nonBlocking["thermalfoundation:fluid_redstone"] = 1
 
 -- Blocks that should be kept and how many of them --
 keptBlocks = {}
 keptBlocks["minecraft:coal"] = 64
-keptBlocks["minecraft:torch"] = 64
+keptBlocks["minecraft:torch"] = 128
 
 -- Relative position of the turtle --
 x = 0
@@ -280,7 +293,7 @@ t_interval = 7
 t_time = t_interval
 
 -- Amount of tunnels to dig
-tunnel_n = 10
+tunnel_n = 40
 -- Length of each tunnels
 tunnel_l = 100
 -- Interval between tunnels
@@ -290,12 +303,12 @@ tunnel_ignore = 0
 
 ---- CODE START ----
 local arg = {...}
-local targetDist = 100
+local reverse = false
 local minerHigh = 2
 local current_tn = 0
 
 if arg[1] ~= nil then
-	targetDist = tonumber(arg[1])
+	reverse = tonumber(arg[1]) == 1
 end
 
 emptyInventory()
@@ -304,12 +317,12 @@ while current_tn < tunnel_n do
 	if current_tn >= tunnel_ignore then
 		tunnelDig(tunnel_l)
 		if z ~= 0 then
-			turtle.turnRight()
+			if reverse then turtle.turnLeft() else turtle.turnRight() end
 			while z~= 0 do
 				move("back")
 				z = z -1
 			end
-			turtle.turnLeft()
+			if reverse then turtle.turnRight() else turtle.turnLeft() end
 		end
 		emptyInventory()
 	end
@@ -317,11 +330,11 @@ while current_tn < tunnel_n do
 	current_tn = current_tn + 1
 
 	if current_tn < tunnel_n then
-		turtle.turnRight()
+			if reverse then turtle.turnLeft() else turtle.turnRight() end
 		while z ~= (tunnel_i+1)*current_tn do
 			move("forward")
 			z = z + 1
 		end
-		turtle.turnLeft()
+			if reverse then turtle.turnRight() else turtle.turnLeft() end
 	end
 end
