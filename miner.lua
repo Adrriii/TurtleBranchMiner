@@ -44,13 +44,22 @@ function mineBlock(dir)
 	local blocked = true
 	while blocked do
 		if dir == "forward" then
-			turtle.dig()
+			blocked, block = turtle.inspect()
+			if forbiddenBlocks[block["name"]] ~= 1 then
+				turtle.dig()
+			end
 			blocked, block = turtle.inspect()
 		elseif dir == "top" then
-			turtle.digUp()
+			blocked, block = turtle.inspectUp()
+			if forbiddenBlocks[block["name"]] ~= 1 then
+				turtle.digUp()
+			end
 			blocked, block = turtle.inspectUp()
 		elseif dir == "bot" then
-			turtle.digDown()
+			blocked, block = turtle.inspectDown()
+			if forbiddenBlocks[block["name"]] ~= 1 then
+				turtle.digDown()
+			end
 			blocked, block = turtle.inspectDown()
 		end
 		if blocked and type(block) ~= boolean then
@@ -281,6 +290,10 @@ nonBlocking["thermalfoundation:fluid_redstone"] = 1
 keptBlocks = {}
 keptBlocks["minecraft:coal"] = 64
 keptBlocks["minecraft:torch"] = 128
+
+-- Blocks that should never be mined --
+forbiddenBlocks = {}
+forbiddenBlocks["computercraft:turtle_advanced"] = 1
 
 -- Relative position of the turtle --
 x = 0
